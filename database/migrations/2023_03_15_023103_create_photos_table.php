@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('photo', function (Blueprint $table) {
-            $table->integer('id');
-            $table->integer('galery_pertandingan_id')->nullable()->galery_pertandingans('id');
+        Schema::create('photos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('galery_pertandingan_id')
+            ->constrained('galery_pertandingans');
             $table->string('path');
             $table->boolean('is_default');
             $table->timestamps();

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Jenis_Tikets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class Jenis_TiketsController extends Controller
 {
@@ -28,39 +29,43 @@ class Jenis_TiketsController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id',
-            'nama',
-            'keterangan',
+    { 
+
+        $jenis_tiket = new Jenis_Tikets();
+        $request->validate([
+            'id' => 'required',
+            'nama' => 'required',
+            'keterangan' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
-        if ($validator->fails()) {
+
+        $filename = "";
+        if ($request->hasFile('keterangan')) {
+            $md5Name = md5_file($request->file('keterangan')->getRealPath());
+            $guessExtension = $request->file('keterangan')->guessExtension();
+            $filename = Str::uuid()->toString().".".$guessExtension;
+            $fullpath = $request->file('keterangan')->storeAs('public/img', $filename);
+        } else {
+            $filename = Null;
+        }
+
+        $jenis_tiket->id = $request->id;
+        $jenis_tiket->nama = $request->nama;
+        $jenis_tiket->keterangan = "storage/img/".$filename;
+        $result = $jenis_tiket->save();
+        
+        if ($result) {
 
             return response()->json([
                 'status' => 422,
-                'message' => $validator->messages()
+                'message' => $jenis_tiket
             ], 422);
         } else {
-
-            $jenis_tiket = Jenis_Tikets::create([
-                'id' => $request->id,
-                'nama' => $request->nama,
-                'keterangan' => $request->keterangan,
-            ]);
-
-            if ($jenis_tiket) {
-
-                return response()->json([
-                    'status' => 200,
-                    'message' => $jenis_tiket
-                ], 200);
-            } else {
 
                 return response()->json([
                     'status' => 500,
                     'message' => "Something Went Wrong!"
                 ], 500);
-            }
+            
         }
     }
     public function show($id)

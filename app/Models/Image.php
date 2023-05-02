@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tiket extends Model
+class Image extends Model
 {
     use HasFactory;
-
-    protected $table = 'Tiket';
-
     protected $fillable = [
-        'id',
-        'tuan_rumah_id',
-        'penantang_id',
-        'tanggal',
+        'title',
+        'image'
+    ];
+
+    protected $hidden=[
+        'created_at',
+        'updated_at'
     ];
 }

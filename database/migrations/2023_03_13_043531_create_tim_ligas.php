@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tim_ligas', function (Blueprint $table) {
-            $table->integer('id');
+            $table->id();
             $table->string('nama');
+            $table->string('stadiun');
             $table->string('keterangan');
-            $table->string('stadion');
+            $table->string('image');
             $table->timestamps();
         });
     }

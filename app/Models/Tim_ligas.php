@@ -14,7 +14,19 @@ class Tim_ligas extends Model
     protected $fillable = [
         'id',
         'nama',
+        'stadiun',
         'keterangan',
-        'stadion',
+        'image'
     ];
+
+    protected $hidden=[
+        'id',
+        'tuan_rumah_id',
+        'penantang_id',
+        'keterangan',
+        'stadiun',
+        'created_at',
+        'updated_at'
+    ];
+
 }

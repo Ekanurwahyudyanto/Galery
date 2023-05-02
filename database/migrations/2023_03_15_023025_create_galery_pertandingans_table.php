@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('galery_pertandingan', function (Blueprint $table) {
-            $table->integer('id');
-            $table->integer('tiket_id')->nullable()->tikets('id');
+        Schema::create('galery_pertandingans', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('tiket_id')
+                ->constrained('tikets');
             $table->timestamps();
         });
     }

@@ -16,4 +16,11 @@ class Jenis_Tikets extends Model
         'nama',
         'keterangan'
     ];
+
+    protected $hidden=[
+        'id',
+        'keterangan',
+        'created_at',
+        'updated_at'
+    ];
 }

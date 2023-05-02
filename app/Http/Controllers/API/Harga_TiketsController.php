@@ -11,7 +11,8 @@ class Harga_TiketsController extends Controller
 {
     public function index()
     {
-        $harga_tiket = Harga_Tikets::all();
+        //$harga_tiket = Harga_Tikets::all();
+        $harga_tiket = Harga_Tikets::with('tiket.tuan_rumah','tiket.penantang','jenis_tiket')->get();
         if ($harga_tiket->count() > 0) {
 
             return response()->json([

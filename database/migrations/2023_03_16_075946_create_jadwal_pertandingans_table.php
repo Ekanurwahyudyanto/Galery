@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tiket', function (Blueprint $table) {
-            $table->integer('id');
-            $table->integer('tuan_rumah_id')->nullable()->tim_ligas('id');
-            $table->integer('penantang_id')->nullable()->tim_ligas('id');
+        Schema::create('jadwal_pertandingans', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('tuan_rumah_id')
+            ->constrained('tim_ligas');
+            $table->foreignId('penantang_id')
+            ->constrained('tim_ligas');
             $table->date('tanggal');
             $table->timestamps();
         });
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tiket');
+        Schema::dropIfExists('jadwal_pertandingans');
     }
 };

@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\galery_pertandingan;
+use App\Models\galery_pertandingans;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class Galery_pertandinganController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $galerys = galery_pertandingan::all();
+      //$galerys = galery_pertandingan::all();
+        $galerys = galery_pertandingans::with('tiket.tuan_rumah','tiket.penantang')->get();
         if($galerys->count()>0){
             
             return response()->json([
@@ -41,16 +42,16 @@ class Galery_pertandinganController extends Controller
                 'message' =>$validator->message()
             ],422);
         }else{
-            $galerys = galery_pertandingan::create([
+            $galerys = galery_pertandingans::create([
                 'id'=>$request->id,
-                'tiket_id'=>$request->tiket_id,
+                'tiket_id'=>$request->tiket_id
             ]);
 
         if($galerys){
 
             return response()->json([
                 'id'=>$request->id,
-                'tiket_id'=>$request->tiket_id
+                'tiket_id'=>$request->tiket_id,
             ],200);
         }else{
 
@@ -64,7 +65,7 @@ class Galery_pertandinganController extends Controller
 
     public function show($id)
     {
-        $galerys = galery_pertandingan::find($id);
+        $galerys = galery_pertandingans::find($id);
         if($galerys){
 
             return response()->json([
@@ -83,7 +84,7 @@ class Galery_pertandinganController extends Controller
 
     public function edit($id)
     {
-        $galerys = galery_pertandingan::find($id);
+        $galerys = galery_pertandingans::with('tikets')->first();
         if($galerys){
 
             return response()->json([
@@ -115,7 +116,7 @@ class Galery_pertandinganController extends Controller
             ],422);
         }else{
 
-        $galerys = galery_pertandingan::find($id);        
+        $galerys = galery_pertandingans::find($id);        
         if($galerys){
 
             $galerys->update([
@@ -140,7 +141,7 @@ class Galery_pertandinganController extends Controller
 
     public function destory($id)
     {
-        $galerys = galery_pertandingan::find($id);
+        $galerys = galery_pertandingans::find($id);
         if($galerys){
             
             $galerys->delete();
@@ -156,4 +157,16 @@ class Galery_pertandinganController extends Controller
             ],404);
         }
     }
+
+    public function list($id) {
+        $galerys = galery_pertandingans::where('id', 'LIKE', '%'. $id. '%')->get();
+        if(count($galerys)){
+            return Response()->json($galerys);
+        }
+        else
+        {
+        return response()->json(['galerys' => 'No Data not found'], 404);
+        }
+    }
+
 }

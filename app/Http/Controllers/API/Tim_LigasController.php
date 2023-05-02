@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Tim_ligas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\support\Facades\Validate;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class Tim_LigasController extends Controller
 {
@@ -29,42 +32,46 @@ class Tim_LigasController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'id',
-            'nama',
-            'keterangan',
-            'stadion'
+        $tim_ligas = new Tim_ligas();
+        $request->validate([
+            'nama' => 'required',
+            'stadiun' => 'required',
+            'keterangan' => 'required',
+            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048'
         ]);
-        if ($validator->fails()) {
+        $filename = "";
+        if ($request->hasFile('image')) {
+            $md5Name = md5_file($request->file('image')->getRealPath());
+            $guessExtension = $request->file('image')->guessExtension();
+            $filename = Str::uuid()->toString().".".$guessExtension;
+            $fullpath = $request->file('image')->storeAs('public/img', $filename);
+        } else {
+            $filename = Null;
+        }
+
+        $tim_ligas->id = $request->id;
+        $tim_ligas->nama = $request->nama;
+        $tim_ligas->stadiun = $request->stadiun;
+        $tim_ligas->keterangan = $request->keterangan;
+        $tim_ligas->image = "storage/img/".$filename;
+        $result = $tim_ligas->save();
+        
+        if ($result) {
 
             return response()->json([
                 'status' => 422,
-                'message' => $validator->messages()
+                'message' => $tim_ligas
             ], 422);
         } else {
-
-            $tim_ligas = Tim_ligas::create([
-                'id' => $request->id,
-                'nama' => $request->nama,
-                'keterangan' => $request->keterangan,
-                'stadion' => $request->stadion,
-            ]);
-
-            if ($tim_ligas) {
-
-                return response()->json([
-                    'status' => 200,
-                    'message' => $tim_ligas
-                ], 200);
-            } else {
 
                 return response()->json([
                     'status' => 500,
                     'message' => "Something Went Wrong!"
                 ], 500);
-            }
+            
         }
     }
+    
     public function show($id)
     {
         $tim_ligas = Tim_ligas::find($id);
@@ -105,8 +112,9 @@ class Tim_LigasController extends Controller
         $validator = Validator::make($request->all(), [
             'id',
             'nama',
+            'stadiun',
             'keterangan',
-            'stadion'
+            'image'
         ]);
 
         if ($validator->fails()) {
@@ -123,8 +131,9 @@ class Tim_LigasController extends Controller
                 $tim_ligas->update([
                     'id' => $request->id,
                     'nama' => $request->nama,
+                    'stadiun' => $request->stadiun,
                     'keterangan' => $request->keterangan,
-                    'stadion' => $request->tanggal,
+                    'path'=> $request->path
                 ]);
 
                 return response()->json([

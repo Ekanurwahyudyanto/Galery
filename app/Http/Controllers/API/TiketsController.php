@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tiket;
+use App\Models\Tikets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,7 +11,8 @@ class TiketsController extends Controller
 {
     public function index()
     {
-        $tikets = Tiket::all();
+        //$tikets = Tikets::all();
+        $tikets = Tikets::with('tuan_rumah','penantang')->get();
         if ($tikets->count() > 0) {
 
             return response()->json([
@@ -43,7 +44,7 @@ class TiketsController extends Controller
             ], 422);
         } else {
 
-            $tikets = Tiket::create([
+            $tikets = Tikets::create([
                 'id' => $request->id,
                 'tuan_rumah_id' => $request->tuan_rumah_id,
                 'penantang_id' => $request->penantang_id,
@@ -68,7 +69,7 @@ class TiketsController extends Controller
     }
     public function show($id)
     {
-        $tikets = Tiket::find($id);
+        $tikets = Tikets::find($id);
         if ($tikets) {
 
             return response()->json([
@@ -79,14 +80,14 @@ class TiketsController extends Controller
 
             return response()->json([
                 'status' => 404,
-                'message' => "No Such Tim_Persik Found!"
+                'message' => "No Such Tiket Found!"
             ], 404);
         }
     }
 
     public function edit($id)
     {
-        $tikets = Tiket::find($id);
+        $tikets = Tikets::find($id);
         if ($tikets) {
 
             return response()->json([
@@ -97,7 +98,7 @@ class TiketsController extends Controller
 
             return response()->json([
                 'status' => 404,
-                'message' => "No Such Tim_Persik Found!"
+                'message' => "No Such Tiket Found!"
             ], 404);
         }
     }
@@ -117,7 +118,7 @@ class TiketsController extends Controller
                 'errors' => $validator->messages()
             ], 422);
         } else {
-            $tikets = Tiket::find($id);
+            $tikets = Tikets::find($id);
             if ($tikets) {
 
                 $tikets->update([
@@ -135,26 +136,39 @@ class TiketsController extends Controller
 
                 return response()->json([
                     'status' => 404,
-                    'message' => "No Such Tim_Persik Found!"
+                    'message' => "No Such Tiket Found!"
                 ], 404);
             }
         }
     }
     public function destory($id)
     {
-        $tikets = Tiket::find($id);
+        $tikets = Tikets::find($id);
         if ($tikets) {
 
             $tikets->delete();
             return response()->json([
                 'status' => 200,
-                'message' => "Tim_Persik Deleted Succesfully"
+                'message' => "Tiket Deleted Succesfully"
             ], 200);
         } else {
             return response()->json([
                 'status' => 404,
-                'message' => "No Such Tim_Persik Found!"
+                'message' => "No Such Tiket Found!"
             ], 404);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $tikets = Tikets::all();
+
+        $tikets = Tikets::all('first_name', 'like', "%{$tikets}%")
+                ->orWhere('last_name', 'like', "%{$tikets}%")
+                ->get();
+
+        return response()->json([
+            'tiket' => $tikets->all()
+        ]);
     }
 }
