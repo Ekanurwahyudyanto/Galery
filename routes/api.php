@@ -9,7 +9,9 @@ use App\Http\Controllers\API\TotalController;
 use App\Http\Controllers\API\UserrController;
 use App\Http\Controllers\Api\GoogleController;
 use App\Http\Controllers\API\MetodeController;
+use App\Http\Controllers\API\ReplayController;
 use App\Http\Controllers\Api\TiketsController;
+use App\Http\Controllers\API\RiwayatController;
 use App\Http\Controllers\Api\TiketssController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\Api\KeranjangController;
@@ -18,6 +20,7 @@ use App\Http\Controllers\API\PembayaranController;
 use App\Http\Controllers\Api\Tim_PersikController;
 use App\Http\Controllers\Api\Harga_TiketsController;
 use App\Http\Controllers\Api\Jenis_TiketsController;
+use App\Http\Controllers\API\StrukturPembayaranController;
 use App\Http\Controllers\Api\Galery_pertandinganController;
 use App\Http\Controllers\Api\Jadwal_pertandinganController;
 
@@ -55,17 +58,19 @@ Route::post('google', [UserController::class, 'tambah']);
 Route::post('google/login', [UserController::class, 'index']);
 Route::get('google/{id}', [UserController::class, 'list']);
 
-Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-Route::get('googlee/{id}', [GoogleController::class, 'list']);
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+Route::get('auth/google', [GoogleController::class, 'redirect'])->name('auth.google')->middleware('web');
+Route::get('auth/google/callback', [GoogleController::class, 'CallbackGoogle']);
 
 //Route::put('users/{id}/update',[UserController::class,'update']);
 
-Route::get('search/{id}', [Galery_pertandinganController::class, 'list']);
 Route::get('galery_pertandingan',[Galery_pertandinganController::class,'index']);
 Route::post('galery_pertandingan',[Galery_pertandinganController::class,'store']);
 Route::get('galery_pertandingan/{id}',[Galery_pertandinganController::class,'show']);
-Route::get('galery_pertandingan/{id}/edit',[Galery_pertandinganController::class,'edit']);
+Route::get('galery_pertandingan/search',[Galery_pertandinganController::class,'list']);
 Route::put('galery_pertandingan/{id}/edit',[Galery_pertandinganController::class,'update']);
 Route::delete('galery_pertandingan/{id}/delete',[Galery_pertandinganController::class,'destory']);
 
@@ -92,11 +97,9 @@ Route::delete('jenis_tiket/{id}/delete', [Jenis_TiketsController::class, 'destor
 
 Route::get('tiket', [TiketsController::class, 'index']);
 Route::post('tiket', [TiketsController::class, 'store']);
-Route::get('tiket/{id}', [TiketsController::class, 'show']);
-Route::get('tiket/{id}/edit', [TiketsController::class, 'edit']);
 Route::put('tiket/{id}/edit', [TiketsController::class, 'update']);
 Route::delete('tiket/{id}/delete', [TiketsController::class, 'destory']); 
-Route::get('tiket/{name}', [TiketsController::class, 'search']);
+Route::get('tiket/search', [TiketsController::class, 'cari']);
 
 Route::get('tampil', [TiketssController::class, 'index']);
 Route::post('tambah', [TiketssController::class, 'store']);
@@ -153,3 +156,21 @@ Route::get('metode/{id}',[MetodeController::class,'show']);
 Route::get('metode/{id}/edit',[MetodeController::class,'edit']);
 Route::put('metode/{id}/edit',[MetodeController::class,'update']);
 Route::delete('metode/{id}/delete',[MetodeController::class,'destory']);
+
+Route::get('struk', [StrukturPembayaranController::class, 'index']);
+Route::post('struk', [StrukturPembayaranController::class, 'store']);
+Route::get('struk/{id}/show', [StrukturPembayaranController::class, 'show']);
+Route::delete('struk/{id}/delete', [StrukturPembayaranController::class, 'destory']);
+
+Route::get('replay',[ReplayController::class,'index']);
+Route::post('replay',[ReplayController::class,'store']);
+Route::get('replay/{id}',[ReplayController::class,'show']);
+Route::get('replay/{id}/edit',[ReplayController::class,'edit']);
+Route::put('replay/{id}/edit',[ReplayController::class,'update']);
+Route::delete('replay/{id}/delete',[ReplayController::class,'destory']);
+
+Route::get('riwayat',[RiwayatController::class,'index']);
+Route::post('riwayat',[RiwayatController::class,'store']);
+Route::get('riwayat/{id}',[RiwayatController::class,'show']);
+Route::put('riwayat/{id}/edit',[RiwayatController::class,'update']);
+Route::delete('riwayat/{id}/delete',[RiwayatController::class,'destory']);

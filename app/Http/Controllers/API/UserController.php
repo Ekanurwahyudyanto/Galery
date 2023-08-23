@@ -163,7 +163,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required'],
             'email' => ['required','email'],
-            'password' => ['required']
+            'password' => ['required'],
         ]);
 
         $credentials = request(['name','email','password']);

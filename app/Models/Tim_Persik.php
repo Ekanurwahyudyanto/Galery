@@ -17,15 +17,12 @@ class Tim_Persik extends Model
         'kewarganegaraan',
         'is_aktif',
         'url_logo',
-        'pemain',
         'posisi_pemain'
     ];
 
     protected $hidden=[
-        'id',
         'is_aktif',
         'kewarganegaraan',
-        'keterangan',
         'created_at',
         'updated_at'
     ];

@@ -9,10 +9,15 @@ use Illuminate\Support\Facades\Validator;
 
 class TiketsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         //$tikets = Tikets::all();
-        $tikets = Tikets::with('tuan_rumah','penantang')->get();
+        $searchTerm = $request->query('q') ??'';
+        $tikets = Tikets::whereHas('tuan_rumah',function($q) use ($searchTerm){
+            $q->Where('nama','like','%'.$searchTerm.'%')
+            ->orWhere('stadiun', 'like', '%'.$searchTerm.'%')->orWhere('tanggal', 'LIKE', "%{$searchTerm}%");
+        })
+        ->with('tuan_rumah','penantang')->get()->makeHidden('tim_ligas');
         if ($tikets->count() > 0) {
 
             return response()->json([
@@ -65,23 +70,6 @@ class TiketsController extends Controller
                     'message' => "Something Went Wrong!"
                 ], 500);
             }
-        }
-    }
-    public function show($id)
-    {
-        $tikets = Tikets::find($id);
-        if ($tikets) {
-
-            return response()->json([
-                'status' => 200,
-                'message' => $tikets
-            ], 200);
-        } else {
-
-            return response()->json([
-                'status' => 404,
-                'message' => "No Such Tiket Found!"
-            ], 404);
         }
     }
 
@@ -159,16 +147,24 @@ class TiketsController extends Controller
         }
     }
 
-    public function search(Request $request)
+    public function cari(Request $request)
     {
-        $tikets = Tikets::all();
 
-        $tikets = Tikets::all('first_name', 'like', "%{$tikets}%")
-                ->orWhere('last_name', 'like', "%{$tikets}%")
-                ->get();
+        $searchTerm = $request->input('nama');
+        $tikets = Tikets::with('tuan_rumah','penantang')->where('tanggal', 'like', '%'.$searchTerm.'%')->orWhere('stadiun', 'LIKE', "%{$searchTerm}%")->get();
+        if ($tikets->count() > 0) {
 
-        return response()->json([
-            'tiket' => $tikets->all()
-        ]);
+            return response()->json([
+                'status' => 200,
+                'message' => $tikets
+            ], 200);
+        } else {
+
+            return response()->json([
+                'status' => 404,
+                'message' => "Data tidak ditemukan"
+            ], 404);
+        }
+        
     }
 }

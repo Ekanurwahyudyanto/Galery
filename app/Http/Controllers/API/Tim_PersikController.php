@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Tim_Persik;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Validate;
 use Illuminate\Support\Str;
 
 class Tim_PersikController extends Controller
@@ -34,40 +36,39 @@ class Tim_PersikController extends Controller
         $request->validate([
             'id' => 'required',
             'nama' => 'required',
-            'keterangan' => 'required',
+            'keterangan' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'kewarganegaraan' => 'required',
             'is_aktif' => 'required',
             'url_logo' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-            'pemain' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'posisi_pemain' => 'required'
         ]);
+
         $filename = "";
-        if ($request->hasFile('url_logo')) {
-            $md5Name = md5_file($request->file('url_logo')->getRealPath());
-            $guessExtension = $request->file('url_logo')->guessExtension();
+        if ($request->hasFile('keterangan')) {
+            $md5Name = md5_file($request->file('keterangan')->getRealPath());
+            $guessExtension = $request->file('keterangan')->guessExtension();
             $filename = Str::uuid()->toString() . "." . $guessExtension;
-            $fullpath = $request->file('url_logo')->storeAs('public/img', $filename);
+            $fullpath = $request->file('keterangan')->storeAs('public/img', $filename);
         } else {
             $filename = Null;
         }
 
-        $filename = "";
-        if ($request->hasFile('pemain')) {
-            $md5Name = md5_file($request->file('pemain')->getRealPath());
-            $guessExtension = $request->file('pemain')->guessExtension();
-            $filename = Str::uuid()->toString() . "." . $guessExtension;
-            $fullpath = $request->file('pemain')->storeAs('public/img', $filename);
+        $filename_url_logo = "";
+        if ($request->hasFile('url_logo')) {
+            $md5Name_url_logo = md5_file($request->file('url_logo')->getRealPath());
+            $guessExtension_url_logo = $request->file('url_logo')->guessExtension();
+            $filename_url_logo = Str::uuid()->toString() . "." . $guessExtension;
+            $fullpath_url_logo = $request->file('url_logo')->storeAs('public/img', $filename_url_logo);
         } else {
-            $filename = Null;
+            $filename_url_logo = Null;
         }
 
         $persiks->id = $request->id;
         $persiks->nama = $request->nama;
-        $persiks->keterangan = $request->keterangan;
+        $persiks->keterangan = "storage/img/" . $filename;
         $persiks->kewarganegaraan = $request->kewarganegaraan;
         $persiks->is_aktif = $request->is_aktif;
-        $persiks->url_logo = "storage/img/" . $filename;
-        $persiks->Pemain = "storag/img/" . $filename;
+        $persiks->url_logo = "storage/img/" . $filename_url_logo;
         $persiks->posisi_pemain = $request->posisi_pemain;
         $result = $persiks->save();
 

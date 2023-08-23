@@ -17,6 +17,7 @@ class Keranjang extends Model
         'harga',
         'tiket_id',
         'total',
+        'jumlh_tiket',
         'tanggal_pembelian',
         'user_id',
         'Seat',
@@ -33,11 +34,6 @@ class Keranjang extends Model
     }
     
     protected $hidden=[
-        'harga',
-        'tiket_id',
-        'keranjang_id',
-        'tiket_id',
-        'harga_tiket_id',
         'created_at',
         'updated_at'
     ];

@@ -3,59 +3,46 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
-use Google\Client;
-use Socialite;
-use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
 
-    public function redirectToProvider()
+    public function redirect()
     {
-        dd("xxx");
-        $client = new Client([
-            'client_id' => env('GOOGLE_CLIENT_ID'),
-            'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-            'redirect_uri' => env('GOOGLE_REDIRECT_URI'),
-        ]);
-
-        $authUrl = $client->createAuthUrl(['openid', 'email', 'profile']);
-
-        return redirect()->away($authUrl);
+        return Socialite::driver('google')->redirect();
     }
 
-    public function handleProviderCallback(Request $request)
+    public function CallbackGoogle()
     {
-        // ...
+        try{
+            $google_user = Socialite::driver('google')->user();
+            
+            $user = User::where('google_id', $google_user->getId())->first();
 
-        // Here, you can create or retrieve a user record in your database
-        // based on the information retrieved from Google.
+            if (!$user){
+                $new_user = User::create([
+                    'name' => $google_user->getName(),
+                    'email' => $google_user->getEmail(),
+                    'google_id' => $google_user->getId()
+                ]);
 
-        $user = User::where('email', $userInfo->getEmail())->first();
+                Auth::login($new_user);
 
-        if (!$user) {
-            $user = new User();
-            $user->name = $userInfo->getName();
-            $user->email = $userInfo->getEmail();
-            $user->password = Hash::make(Str::random(20));
-            $user->save();
+                return redirect()->intended('dashboard');
+            }
+            else{
+                Auth::login($user);
+
+                return redirect()->intended('dashboard');
+            }
+
+        } catch (\Throwable $th) {
+            ('Something went wrong! '. $th->getMessage());
         }
-
-        // Auth::login($User);
-
-        // //jika berhasil maka login
-        // $tokenResult = $user->createToken('authToken')->plainTextToken;
-    
-        // return $this->sendResponse([
-        //     'access_token' => $tokenResult,
-        //         'token_type' => 'Bearer',
-        //         'user' => $user
-        // ], 'Authenticated');
     }
 }

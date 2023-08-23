@@ -21,7 +21,6 @@ class Pembayaran extends Model
     ];
 
     protected $hidden = [
-        'id',
         'tiket_id',
         'keranjang_id',
         'harga_tiket_id',
@@ -32,6 +31,16 @@ class Pembayaran extends Model
     public function tiket()
     {
         return $this->belongsTo(Tikets::class, 'tiket_id');
+    }
+
+    public function tuan_rumah()
+    {
+        return $this->belongsTo(Tikets::class, 'tuan_rumah');
+    }
+
+    public function penantang()
+    {
+        return $this->belongsTo(Tikets::class, 'penantang');
     }
 
     public function harga_tiket()
