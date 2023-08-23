@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Models\Keranjang;
+use App\Models\riwayat;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class KeranjangController extends Controller
+class RiwayatController extends Controller
 {
     public function index()
     {
-        //$keranjang = Keranjang::all();
-        $keranjang = keranjang::with('harga_tiket','tiket.tuan_rumah','tiket.penantang')->get();
-        if ($keranjang->count() > 0) {
+        //$riwayats = riwayat::all();
+        $riwayats = riwayat::with('tiket.tuan_rumah','tiket.penantang')->get();
+        if ($riwayats->count() > 0) {
 
             return response()->json([
                 'status' => 200,
-                'message' => $keranjang
+                'message' => $riwayats
             ], 200);
         } else {
 
@@ -31,13 +31,10 @@ class KeranjangController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'harga_tiket_id',
-            'harga',
+            'id',
             'tiket_id',
-            'total',
-            'jumlh_tiket',
-            'tanggal_pembelian',
-            'Seat'
+            'seat',
+            'pembayaran'
         ]);
         if ($validator->fails()) {
 
@@ -46,21 +43,19 @@ class KeranjangController extends Controller
                 'message' => $validator->messages()
             ], 422);
         } else {
-            $keranjang = Keranjang::create([
-                'harga_tiket_id' => $request->harga_tiket_id,
-                'harga' => $request->harga,
+
+            $riwayats = riwayat::create([
+                'id' => $request->id,
                 'tiket_id' => $request->tiket_id,
-                'total' => $request->total,
-                'jumlh_tiket' => $request->jumlh_tiket ?? 1,
-                'tanggal_pembelian' => $request->tanggal_pembelian,
-                'Seat' => $request->Seat,
+                'seat' => $request->seat,
+                'pembayaran' => $request->pembayaran,
             ]);
 
-            if ($keranjang) {
+            if ($riwayats) {
 
                 return response()->json([
                     'status' => 200,
-                    'message' => $keranjang
+                    'message' => $riwayats
                 ], 200);
             } else {
 
@@ -73,50 +68,46 @@ class KeranjangController extends Controller
     }
     public function show($id)
     {
-        $keranjang = Keranjang::find($id);
-        if ($keranjang) {
+        $riwayats = riwayat::find($id);
+        if ($riwayats) {
 
             return response()->json([
                 'status' => 200,
-                'message' => $keranjang
+                'message' => $riwayats
             ], 200);
         } else {
 
             return response()->json([
                 'status' => 404,
-                'message' => "No Such Keranjang Found!"
+                'message' => "No Such riwayats Found!"
             ], 404);
         }
     }
 
     public function edit($id)
     {
-        $keranjang = Keranjang::find($id);
-        if ($keranjang) {
+        $riwayats = riwayat::find($id);
+        if ($riwayats) {
 
             return response()->json([
                 'status' => 200,
-                'message' => $keranjang
+                'message' => $riwayats
             ], 200);
         } else {
 
             return response()->json([
                 'status' => 404,
-                'message' => "No Such Keranjang Found!"
+                'message' => "No Such riwayats Found!"
             ], 404);
         }
     }
-    public function update(Request $request, int $id)
+    public function update(int $id, Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id',
-            'harga_tiket_id',
-            'harga',
             'tiket_id',
-            'total',
-            'jumlh_tiket',
-            'tanggal_pembelian',
-            'Seat'
+            'seat',
+            'pembayaran'
         ]);
 
         if ($validator->fails()) {
@@ -126,57 +117,57 @@ class KeranjangController extends Controller
                 'errors' => $validator->messages()
             ], 422);
         } else {
+            $riwayats = riwayat::find($id);
+            if ($riwayats) {
 
-            $keranjang = Keranjang::find($id);
-            if ($keranjang) {
-
-                $keranjang->update([
+                $riwayats->update([
                     'id' => $request->id,
-                    'harga_tiket_id' => $request->harga_tiket_id,
-                    'harga' => $request->harga,
                     'tiket_id' => $request->tiket_id,
-                    'total' => $request->total,
-                    'jumlh_tiket' => $request->jumlh_tiket ?? 1,
-                    'tanggal_pembelian' => $request->tanggal_pembelian,
-                    'Seat' => $request->Seat,
+                    'seat' => $request->seat,
+                    'pembayaran' => $request->pembayaran
                 ]);
 
                 return response()->json([
                     'status' => 200,
-                    'message' => $keranjang
+                    'message' => $riwayats
                 ], 200);
             } else {
 
                 return response()->json([
                     'status' => 404,
-                    'message' => "No Such Keranjang Found!"
+                    'message' => "No Such riwayats Found!"
                 ], 404);
             }
         }
     }
     public function destory($id)
     {
-        $keranjang = Keranjang::find($id);
-        if ($keranjang) {
+        $riwayats = riwayat::find($id);
+        if ($riwayats) {
 
-            $keranjang->delete();
+            $riwayats->delete();
             return response()->json([
                 'status' => 200,
-                'message' => "Keranjang Deleted Succesfully"
+                'message' => "riwayats Deleted Succesfully"
             ], 200);
         } else {
             return response()->json([
                 'status' => 404,
-                'message' => "No Such Keranjang Found!"
+                'message' => "No Such riwayats Found!"
             ], 404);
         }
     }
 
-    public function updateJumahTiket($id, Request $request){
-        $keranjang = Keranjang::find($id);
+    public function search(Request $request)
+    {
+        $riwayats = riwayat::all();
 
-        $keranjang->update([
-            
+        $riwayats = riwayat::all('first_name', 'like', "%{$riwayats}%")
+                ->orWhere('last_name', 'like', "%{$riwayats}%")
+                ->get();
+
+        return response()->json([
+            'riwayats' => $riwayats->all()
         ]);
     }
 }

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('kewarganegaraan');
             $table->boolean('is_aktif');
             $table->string('url_logo');
-            $table->string('pemain');
             $table->string('posisi_pemain');
             $table->timestamps();
         });

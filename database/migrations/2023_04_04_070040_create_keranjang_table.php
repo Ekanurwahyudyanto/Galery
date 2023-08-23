@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('harga_tiket_id')
             ->constrained('harga_tikets');
-            $table->boolean('harga');
+            $table->string('harga');
             $table->foreignId('tiket_id')
             ->constrained('tikets');
             $table->double('total');
+            $table->string('jumlh_tiket');
             $table->date('tanggal_pembelian');
             $table->string('Seat');
             $table->timestamps();

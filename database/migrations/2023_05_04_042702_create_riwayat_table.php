@@ -13,8 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function($table){
-            $table->string('google_id')->nullable();
+        Schema::create('riwayat', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('tiket_id')
+            ->constrained('tikets');
+            $table->string('seat');
+            $table->string('pembayaran');
+            $table->timestamps();
         });
     }
 
@@ -25,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('riwayat');
     }
 };

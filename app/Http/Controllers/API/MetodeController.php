@@ -51,14 +51,41 @@ class MetodeController extends Controller
         } else {
             $filename = Null;
         }
+        $filename_logo2 = "";
+        if ($request->hasFile('image')) {
+            $md5Name = md5_file($request->file('image')->getRealPath());
+            $guessExtension_logo2 = $request->file('image')->guessExtension();
+            $filename_logo2 = Str::uuid()->toString().".".$guessExtension;
+            $fullpath_logo2 = $request->file('image')->storeAs('public/img', $filename_logo2);
+        } else {
+            $filename = Null;
+        }
+        $filename_logo3 = "";
+        if ($request->hasFile('image')) {
+            $md5Name_logo3 = md5_file($request->file('image')->getRealPath());
+            $guessExtension_logo3 = $request->file('image')->guessExtension();
+            $filename_logo3 = Str::uuid()->toString().".".$guessExtension;
+            $fullpath_logo3 = $request->file('image')->storeAs('public/img', $filename_logo3);
+        } else {
+            $filename = Null;
+        }
+        $filename_logo4 = "";
+        if ($request->hasFile('image')) {
+            $md5Name_logo4 = md5_file($request->file('image')->getRealPath());
+            $guessExtension_logo4 = $request->file('image')->guessExtension();
+            $filename_logo4 = Str::uuid()->toString().".".$guessExtension;
+            $fullpath_logo4 = $request->file('image')->storeAs('public/img', $filename_logo4);
+        } else {
+            $filename = Null;
+        }
 
             $metodes->id = $request->id;
             $metodes->tiket_id = $request->tiket_id;
             $metodes->keranjang_id = $request->keranjang_id;
             $metodes->logo1 = "storage/img/".$filename;
-            $metodes->logo2 = "storage/img/".$filename;
-            $metodes->logo3 = "storage/img/".$filename;
-            $metodes->logo4 = "storage/img/".$filename;
+            $metodes->logo2 = "storage/img/".$filename_logo2;
+            $metodes->logo3 = "storage/img/".$filename_logo3;
+            $metodes->logo4 = "storage/img/".$filename_logo4;
             $result = $metodes->save();
 
             if ($result) {

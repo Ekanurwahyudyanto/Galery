@@ -90,8 +90,8 @@ class PembayaranController extends Controller
 
     public function edit($id)
     {
-        $pembayarans = Pembayaran::find($id);
-        if ($pembayarans) {
+        $pembayarans = Pembayaran::with('tiket.tuan_rumah','tiket.penantang','harga_tiket','keranjang')->where('id', $id)->first();
+        if ($pembayarans->count() > 0){
 
             return response()->json([
                 'status' => 200,
@@ -105,6 +105,7 @@ class PembayaranController extends Controller
             ], 404);
         }
     }
+
     public function update(Request $request, int $id)
     {
         $validator = Validator::make($request->all(), [

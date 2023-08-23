@@ -12,7 +12,15 @@ class Galery_pertandinganController extends Controller
     public function index(Request $request)
     {
       //$galerys = galery_pertandingan::all();
-        $galerys = galery_pertandingans::with('tiket.tuan_rumah','tiket.penantang')->get();
+        $searchTerm = $request->query('q') ??'';
+        $galerys = galery_pertandingans::whereHas('tiket', function($q) use($searchTerm){
+            $q->orWhere('stadiun', 'like', '%'.$searchTerm.'%')->orWhere('tanggal', 'LIKE', "%{$searchTerm}%");
+        })
+        ->whereHas('tiket.tuan_rumah',function($q) use ($searchTerm){
+            $q->Where('nama','like','%'.$searchTerm.'%');
+        })
+        ->with('tiket.tuan_rumah','tiket.penantang')->get()->makeHidden('tiket_id');
+
         if($galerys->count()>0){
             
             return response()->json([
@@ -158,14 +166,22 @@ class Galery_pertandinganController extends Controller
         }
     }
 
-    public function list($id) {
-        $galerys = galery_pertandingans::where('id', 'LIKE', '%'. $id. '%')->get();
-        if(count($galerys)){
-            return Response()->json($galerys);
-        }
-        else
-        {
-        return response()->json(['galerys' => 'No Data not found'], 404);
+    public function list(Request $request)
+    {
+        $searchTerm = $request->input('nama');
+        $galerys = galery_pertandingans::where('stadiun', 'like', '%'.$searchTerm.'%')->get();
+        if ($galerys->count() > 0) {
+
+            return response()->json([
+                'status' => 200,
+                'message' => $galerys
+            ], 200);
+        } else {
+
+            return response()->json([
+                'status' => 404,
+                'message' => "No Record Found"
+            ], 404);
         }
     }
 
